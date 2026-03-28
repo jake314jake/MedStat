@@ -1,0 +1,4601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques Hydrocephalie</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Statistiques des patients / hydrocéphalie</h1>
+
+  <div class="grid-container">
+    <div class="chart-card">
+      <h2>Répartition selon le sexe</h2>
+      <canvas id="sexChart"></canvas>
+    </div>
+    <div class="chart-card">
+  <h2>Distribution par âge</h2>
+  <canvas id="ageChart"></canvas>
+ 
+</div>
+
+<div class="chart-card">
+  <h2>Antécédents Pédiatriques / Néonataux</h2>
+  <canvas id="pediatrieChart"></canvas>
+ 
+</div>
+<div class="chart-card">
+  <h2>Antécédents Adultes</h2>
+  <canvas id="adultChart"></canvas>
+ 
+</div>
+<div class="chart-card">
+  <h2>Circonstances de découverte</h2>
+  <canvas id="decouverteChart"></canvas>
+  
+</div>
+<div class="chart-card">
+  <h2>Circonstances de découverte </h2>
+  <canvas id="decouvertePieChart"></canvas>
+  
+</div>
+<div class="chart-card">
+  <h2>Imagerie</h2>
+  <canvas id="imagerieChart"></canvas>
+  
+</div>
+<div class="chart-card full-width">
+  <h2>Prise en charge</h2>
+
+  <div class="sub-grid">
+    <div>
+      <canvas id="interventionChart"></canvas>
+    </div>
+
+    <div>
+      <canvas id="evolutionChart"></canvas>
+    </div>
+
+    <div class="wide-chart">
+      <canvas id="dateTrendChart"></canvas>
+    </div>
+  </div>
+</div>
+  
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script >
+    // stat.js
+
+
+// Charger le fichier JSON généré
+//const dataRaw = fs.readFileSync('./patients.json', 'utf-8');
+const patients = [
+  {
+    "nom": "Abdeli",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Tumeur de la FCP hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Achour",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 65,
+      "glasgow": null,
+      "examen_neuro": "Myelomeningocele et déficit moteur des membres inférieurs"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Malformation type chiari 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "0,67 g/L",
+      "glycorachie": "0,32 mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": "Aspect trouble 58 éléments"
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-12-10",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Achour",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": true
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Trouble de la mémoire et marche à petit pas"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie sus tentorielle active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-01-19",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Addou",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Céphalées et vomissements pas de déficit moteur ou sensitif"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-02-07",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Ammroussi",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Consciente et cooperante .FO"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Persistance d une  Hydrocephalie truventriculaire sans processus intra craniien"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": false
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-07-07",
+      "type_valve": "Revision de valve deja faite en 2018",
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Aous",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 45,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": ""
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-05-25",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Aslouni",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Signes HIC"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Craniopharyngiome comprimant le V3"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-02-19",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Bahloul",
+    "sexe": "F",
+    "date_naissance": "2024-01-23",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": 7,
+      "taille_cm": 43,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Patiente eveillee apatique . Etat general moyen .pas de singes.d HIC .  Spina bifida lombaire mal epidermise suitante non fistulise"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Une malformation de chiarri 2 associé a une hydrocephalie triventriculaire  sus tentoriel modere .a irm medullaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-05-02",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Belfoul",
+    "sexe": "M",
+    "date_naissance": "2000-03-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Syndrome HIC .FO"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Important hydrocephalie tetraventriculaire active sur malformation d arnold chiari de type 1"
+    },
+    "biologie": {
+      "glycemie": "1.07",
+      "proteinorachie": "/ g/L",
+      "glycorachie": "/ mmol/L",
+      "cytologie_lcr": "/",
+      "culture_lcr": "/"
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-02-18",
+      "type_valve": null,
+      "date_derniere_consultation": "2024-02-19"
+    }
+  },
+  {
+    "nom": "Belkada",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Trouble de l’équilibre sd cinétique"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "PEIC et hydrocéphalie tri ventricule"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2026-01-22",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Bellil",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Céphalées voumissement œdème papillaire stade 2"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Kyste arachnoïdien de la FCP"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": false
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-04-21",
+      "type_valve": "Derivation kysto peritoneal",
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Benaissa",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 47,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Malformation de chiari type 2 hydrocéphalie sus tentorielle"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": false
+      },
+      "date_intervention": "2023-08-06",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Benattallah",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": true,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 48,
+      "glasgow": null,
+      "examen_neuro": "Patiente éveillée État général conservé pupille isochores réactives œdème papillaire stade 3"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire non communicante non active suite à une sténose de l’aqueduc de sylvius"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-05-20",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Benattallah",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": true,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 48,
+      "glasgow": null,
+      "examen_neuro": "Patiente éveillée État général conservé pupille isochores réactives œdème papillaire stade 3"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire non communicante non active suite à une sténose de l’aqueduc de sylvius"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-05-20",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Bergoug",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": true,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": true
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Triade adams et hakimi"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie à pression normale"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-02-20",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Berkani",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Cooperante consciente"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Processus tumorale FCPavecc une dilatation triventriculaire debutante"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2026-03-16",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Berrah",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Syndrome hic"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Processus tumorale expansif du v3 compatible avec un ependymome a l origine d une obstruction de la circulation du lcr avec hydrocephalie tricentriculaire actif"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Bouchnak",
+    "sexe": "M",
+    "date_naissance": "2022-11-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 51,
+      "glasgow": null,
+      "examen_neuro": "Tumefication accipital de 2 cm . Conscient et vigilant .pas de deficit neurologique"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Meningocele occipital posterieur.hydrocephalie tetraventriculaire+ augmentation de la taille du du kyste de la poche de blakc"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-05-02",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Boudabia",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": true
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 50,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-23",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Boudmaa",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Sd cérébelleux démarche ebrieuse dyschronometrie"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "FCP vermio cérébelleuse et hydrocéphalie active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-09",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Boumaiza",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": true,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": true
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 14,
+      "examen_neuro": "Patiente consciente cooperante . Absence de deficit sensitivomoteur .pas de signe de comitialite. Trouble de la marche . Trouble de memoire ."
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie chronique tri ventriculaire communicante secondaire probablement a une stenose de l aqueduc de sylvien"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-10-23",
+      "type_valve": null,
+      "date_derniere_consultation": "2025-10-26"
+    }
+  },
+  {
+    "nom": "Bourabaa",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": true
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 58,
+      "glasgow": null,
+      "examen_neuro": "Cécité et surdité retard psychomoteur"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie majeure"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-03-22",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Bourzama",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Œdème papillaire stade 1 pas de déficit sensitivo-moteur"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire peu active sur sténose aqeuducale"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-03-05",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Chaabane",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Céphalées pas de déficit moteur ni sensitive"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-04-10",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Cherchal",
+    "sexe": "F",
+    "date_naissance": "2024-12-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Bon etat d’eveille. Etat genral conserve .FA etendue . Deficitaire paraplégie"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Importante hydrocephalie sus tentoriel sur myelomeningocéle lombaire et malformation de chiari severe"
+    },
+    "biologie": {
+      "glycemie": "0.87",
+      "proteinorachie": "/ g/L",
+      "glycorachie": "/ mmol/L",
+      "cytologie_lcr": "/",
+      "culture_lcr": "/"
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": false
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-03-20",
+      "type_valve": "/",
+      "date_derniere_consultation": "2025-05-21"
+    }
+  },
+  {
+    "nom": "Cherifi",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": true
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 53,
+      "glasgow": null,
+      "examen_neuro": "Sd HIC trouble visuel"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire avec sténose de l’aqueduc de sylvius"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-15",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Chetta",
+    "sexe": "M",
+    "date_naissance": "1986-12-16",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "FO"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Kyste épidermoide de l angle ponto cerebrlleux responsable d une hydrocephalie"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-04-21",
+      "type_valve": null,
+      "date_derniere_consultation": "2024-04-24"
+    }
+  },
+  {
+    "nom": "Dada",
+    "sexe": "F",
+    "date_naissance": "1996-02-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Consciente et cooperante .syndrome cérébelleux statocenitique"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie sus tentorielle communicante et active . Malformation de la charniere occipito vertébrale a type de chiari"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "19.40 g/L",
+      "glycorachie": "0.30  mmol/L",
+      "cytologie_lcr": "Leucocytes",
+      "culture_lcr": "En cours"
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2021-02-21",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Dahmani",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": true
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 53,
+      "glasgow": null,
+      "examen_neuro": "Retard psychomoteur regard coucher de soleil FA tendue"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tetraventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "1,73 g/L",
+      "glycorachie": "0,10 mmol/L",
+      "cytologie_lcr": "108",
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-03-27",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Dahmani",
+    "sexe": "M",
+    "date_naissance": "2023-02-07",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": true,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 53,
+      "glasgow": 15,
+      "examen_neuro": "Bon etat general.bonne coloration cutaneo muqueux .retard du développement moteur .presence de syndrome d HIC"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Séquelles d Hemmoragie parenchymateux ventriculaire avec un caillotage adhérent intra ventriculaire . Hydrocephalie tetraventriculaire importante"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-04",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Djelouli",
+    "sexe": "F",
+    "date_naissance": "2023-09-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": 7,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 14,
+      "examen_neuro": "Conscient et vigilante"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Myelominingocele dorsolombaire avec arnold chiari type 2 responsable d une hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": "1.15",
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-02-11",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Djelouli",
+    "sexe": "F",
+    "date_naissance": "2023-09-14",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": 7,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 14,
+      "examen_neuro": "Conscient et vigilante"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Myelominingocele dorsolombaire avec arnold chiari type 2 responsable d une hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": "1.15",
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-02-11",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Dzencri",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Etat general conserve . Apyrétique.strabisme divergent .absence de comitialite..hemiparisie droite depuis la naissance"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie monoventriculaire gauche passive associe a une hypotrophie modérée hémisphérique homolaterale ainsi que une grande mega citerne"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-07-20",
+      "type_valve": null,
+      "date_derniere_consultation": "2023-08-23"
+    }
+  },
+  {
+    "nom": "El ayeb",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": true,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Pas de déficit neurologique pas de comitialite"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-05-14",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "El bouali",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Paraplégie crise convulsive"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Malformation de Arnold chiari type 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-03-25",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "El mohri",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Conscient et cooperant .FO"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Masse kysti solide benigne de la fcp cerebeleuse gauchea l origine d une hydrocephalie sus tentoriel modere evoquant hemangioblastome"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-02-24",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Fodhil",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": true
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Cavernome thalamo capsulaire Hdc biventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-02-27",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Gendouz",
+    "sexe": "F",
+    "date_naissance": "1995-03-17",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Sans signes HIC . Sans deficit neurologique .sans notion de comitialite . Aspect d une macrocranie"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Kyste arachnoïde de la fcp responsable d une compression de l aqueduc de sylvius avec une hydrocephalie triventriculaire important en amont"
+    },
+    "biologie": {
+      "glycemie": "1.10",
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-04-08",
+      "type_valve": null,
+      "date_derniere_consultation": "2024-04-11"
+    }
+  },
+  {
+    "nom": "Guerine",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 59,
+      "glasgow": null,
+      "examen_neuro": "Sd HIC circulation veineuse collatérale"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tetra ventriculaire malformation de chiari 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "0,25 g/L",
+      "glycorachie": "0,42 mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-01",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Hamzi",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Conscient cooperant .FO"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Kyste epidermoide extra axial rompu dans le systeme ventriculaire avec hydrocephalie secondaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-11-20",
+      "type_valve": null,
+      "date_derniere_consultation": "2025-11-23"
+    }
+  },
+  {
+    "nom": "Hennine",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Retard psychomoteur"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie bi ventriculaire passive communicante"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Kalkoul",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 57,
+      "glasgow": null,
+      "examen_neuro": "Fontanelle tendue et scalp aminci"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Complexe lésionnel malformatif arnold chiari type 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-12-26",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Koichih",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 75,
+      "glasgow": null,
+      "examen_neuro": "Patient apathique"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tetra ventriculaire active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-08-28",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Labdi",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "FO"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Masse extra axial centre sur le cavum de meckel droit avec extension parra sellaire au niveau de la FCP responsable a une dilatation tri ventriculaire actif"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Laib",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": true
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Patient cooperant .syndrome d HIC present.pas de deficit moteur et sensitif"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Dilatation ventriculaire et hydrocephalie tetraventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-03-12",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Lichani",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 46,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Malformation chiari type 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-11-14",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Maalem",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 41,
+      "glasgow": null,
+      "examen_neuro": "Spina-bifida lombo sacré fontanelle antérieur normo tendue"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie sus tentorielle et malformation chiari type 2"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-03-13",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Messouad",
+    "sexe": "M",
+    "date_naissance": "2021-04-19",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": 13,
+      "taille_cm": null,
+      "pc_cm": 57,
+      "glasgow": null,
+      "examen_neuro": "Conscient apyrétique bien éveillee .FO"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie triventriculaire  sur stenose du l aqueduc de sylvius"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-01-11",
+      "type_valve": null,
+      "date_derniere_consultation": "2024-01-14"
+    }
+  },
+  {
+    "nom": "Mkhalfi",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": ""
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": "13 elements/ mm3",
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Mokrani",
+    "sexe": "F",
+    "date_naissance": "1974-09-19",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Patiente consciente coopérante . Pas de signes d HIC . Pas de notion de comitialite. Babinski positive .parapareisie spastique (3/5). Trouble sphincterien de type retention urinaire . FO"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie non communicante tri ventriculaire actif en rapport a une stenose de l aqeuduc"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2026-02-02",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Nafraioui",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": true,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 48,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Malformation chiari type 2 associee a une hydrocephalie tri ventriculaire passive"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Ostmane",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": true,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": true
+    },
+    "examen_clinique": {
+      "poids_kg": 70,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Consciente cooperante . Pas de signes d hic . Pas de comitialite .pas de deficit sensitivo-moteur.triade d hakim et adam"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie triventriculaiire avec avec fin manteau cerebral . iRM cerebral"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2026-02-11",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Ouachen",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Conscient cooperant . Baisse d acuité visuelle"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie triventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-11-20",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Ouzar",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "HDC majeure"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-09-09",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Radjali",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Sd HIC photophobie"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire discrètement active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": "Negative"
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-06-20",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Rayane",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tetra ventriculare"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-07-13",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Rouibia",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 52,
+      "glasgow": null,
+      "examen_neuro": "Trouble de la marche et de l’équilibre"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tri ventriculaire"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Saidi",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Malformation de dandy walker hydrocéphalie tri ventriculaire meningocele occipitale"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Smati",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": 20,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Patient conscient cooperant .strabisme convergente a gauche .syndrome cérébelleux statique.. pupille isocore reactif"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Processus tumorale de la fcp developé au nivrau du v4 comprimant le tranc cerebral responsable d une hydrocephalie  tri ventriculaire active  evoquant un ependymome  de v4"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-04-24",
+      "type_valve": null,
+      "date_derniere_consultation": "2024-04-28"
+    }
+  },
+  {
+    "nom": "Taibaoui",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": ""
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": null,
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Tamri",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 53,
+      "glasgow": null,
+      "examen_neuro": "Sd HIC FA tendue circulation veineuse collatérale"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie tetra ventriculaire active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-09-26",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Yahiaoui",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": true
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": false,
+      "troubles_marche": true,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Triade de hakimi et adams trouble sphinctérien et de la marche"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Ventriculomegalie supra tentorielle"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-05-16",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Yaiche",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Patient somnolent céphalées atroces"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocéphalie active"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-10-14",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Yamani",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": 15,
+      "examen_neuro": "Conscient cooperant . Notion de cephalee intense"
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie triventriculaire obstructive avec signes de résorption transependymaire de lcr secondaire a un stenose congenital du l aqeuducde sylvius par une malformation membraneuse du cordon"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-04-21",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Zaaroure",
+    "sexe": "M",
+    "date_naissance": "2009-11-19",
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 38,
+      "glasgow": null,
+      "examen_neuro": "Conscient ,non cooperant, aphasique . Pas de signes d HIC .. presence d un nystagmus horizontal"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie avec volumineux kyste arachnoïdien  fronto parietal gauche visiblement communiqunat"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2024-03-24",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Zafzaf",
+    "sexe": "F",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": false,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": true,
+      "cephalees": false,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": true,
+      "fontanelle_tendue": true,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": 53,
+      "glasgow": null,
+      "examen_neuro": ""
+    },
+    "imagerie": {
+      "scanner": true,
+      "irm": false,
+      "echographie": false,
+      "indice_evans": "Hydrocephalie"
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2025-01-19",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  },
+  {
+    "nom": "Ziane",
+    "sexe": "M",
+    "date_naissance": null,
+    "antecedents": {
+      "pediatriques": {
+        "prematurite": false,
+        "hemorragie_iv": false,
+        "spina_bifida": false,
+        "meningite": false
+      },
+      "adultes": {
+        "tc": false,
+        "avc": false,
+        "tumeur": true,
+        "chirurgie_anterieure": false
+      }
+    },
+    "decouverte": {
+      "macrocranie": false,
+      "cephalees": true,
+      "troubles_marche": false,
+      "incontinence": false,
+      "regard_soleil": false,
+      "fontanelle_tendue": false,
+      "troubles_memoire": false
+    },
+    "examen_clinique": {
+      "poids_kg": null,
+      "taille_cm": null,
+      "pc_cm": null,
+      "glasgow": null,
+      "examen_neuro": "Pas de signes HIC"
+    },
+    "imagerie": {
+      "scanner": false,
+      "irm": true,
+      "echographie": false,
+      "indice_evans": ""
+    },
+    "biologie": {
+      "glycemie": null,
+      "proteinorachie": "g/L",
+      "glycorachie": "mmol/L",
+      "cytologie_lcr": null,
+      "culture_lcr": null
+    },
+    "prise_en_charge": {
+      "intervention": {
+        "dvp": true
+      },
+      "evolution": {
+        "favorable": true
+      },
+      "date_intervention": "2023-11-28",
+      "type_valve": null,
+      "date_derniere_consultation": null
+    }
+  }
+];
+
+ // ---- SEXE ----
+    const sexeCounts = patients.reduce((acc, p) => {
+      if (p.sexe === 'M') acc.M += 1;
+      else if (p.sexe === 'F') acc.F += 1;
+      return acc;
+    }, { M: 0, F: 0 });
+
+    const ctxSex = document.getElementById('sexChart').getContext('2d');
+    new Chart(ctxSex, {
+      type: 'doughnut',
+      data: {
+        labels: ['Hommes', 'Femmes'],
+        datasets: [{
+          label: 'Nombre de patients',
+          data: [sexeCounts.M, sexeCounts.F],
+          backgroundColor: ['#36A2EB', '#FF6384'],
+          borderColor: ['#fff', '#fff'],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          title: { display: true, text: 'Répartition des patients selon le sexe' }
+        }
+      }
+    });
+
+    // ---- AGE ----
+    // Calculer l'âge des patients
+    const currentYear = new Date().getFullYear();
+    const ages = patients.map(p => {
+      if (p.date_naissance) {
+        const birthYear = new Date(p.date_naissance).getFullYear();
+        return currentYear - birthYear;
+      } else return null;
+    }).filter(a => a !== null);
+
+    // Définir les tranches d'âge
+    const ageBins = ["0-1", "2-5", "6-12", "13-18", "19-30", "31-50", "51+" ];
+    const ageCounts = [0,0,0,0,0,0,0];
+
+    ages.forEach(age => {
+      if (age <= 1) ageCounts[0]++;
+      else if (age <= 5) ageCounts[1]++;
+      else if (age <= 12) ageCounts[2]++;
+      else if (age <= 18) ageCounts[3]++;
+      else if (age <= 30) ageCounts[4]++;
+      else if (age <= 50) ageCounts[5]++;
+      else ageCounts[6]++;
+    });
+
+    const ctxAge = document.getElementById('ageChart').getContext('2d');
+    new Chart(ctxAge, {
+      type: 'bar',
+      data: {
+        labels: ageBins,
+        datasets: [{
+          label: 'Nombre de patients',
+          data: ageCounts,
+          backgroundColor: '#3498db',
+          borderColor: '#2980b9',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Distribution par âge' }
+        },
+        scales: {
+          y: { beginAtZero: true, stepSize: 1 }
+        }
+      }
+    });
+// ---- ANTÉCÉDENTS PÉDIATRIQUES ----
+
+// Initialiser les compteurs
+const pediatrieCounts = {
+  prematurite: 0,
+  hemorragie_iv: 0,
+  spina_bifida: 0,
+  meningite: 0
+};
+
+// Compter les occurrences
+patients.forEach(p => {
+  const ped = p.antecedents?.pediatriques;
+
+  if (!ped) return;
+
+  if (ped.prematurite) pediatrieCounts.prematurite++;
+  if (ped.hemorragie_iv) pediatrieCounts.hemorragie_iv++;
+  if (ped.spina_bifida) pediatrieCounts.spina_bifida++;
+  if (ped.meningite) pediatrieCounts.meningite++;
+});
+
+// Créer le graphique
+const ctxPed = document.getElementById('pediatrieChart').getContext('2d');
+
+new Chart(ctxPed, {
+  type: 'bar',
+  data: {
+    labels: [
+      'Prématurité',
+      'Hémorragie IV',
+      'Spina bifida',
+      'Méningite'
+    ],
+    datasets: [{
+      label: 'Nombre de patients',
+      data: [
+        pediatrieCounts.prematurite,
+        pediatrieCounts.hemorragie_iv,
+        pediatrieCounts.spina_bifida,
+        pediatrieCounts.meningite
+      ],
+      backgroundColor: [
+        '#1abc9c',
+        '#3498db',
+        '#9b59b6',
+        '#e67e22'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Antécédents pédiatriques / néonataux'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  }
+});
+// ---- ANTÉCÉDENTS ADULTES ----
+
+// Initialiser les compteurs
+const adultCounts = {
+  tc: 0,
+  avc: 0,
+  tumeur: 0,
+  chirurgie_anterieure: 0
+};
+
+// Compter les occurrences
+patients.forEach(p => {
+  const ad = p.antecedents?.adultes;
+
+  if (!ad) return;
+
+  if (ad.tc) adultCounts.tc++;
+  if (ad.avc) adultCounts.avc++;
+  if (ad.tumeur) adultCounts.tumeur++;
+  if (ad.chirurgie_anterieure) adultCounts.chirurgie_anterieure++;
+});
+
+// Créer le graphique
+const ctxAdult = document.getElementById('adultChart').getContext('2d');
+
+new Chart(ctxAdult, {
+  type: 'bar',
+  data: {
+    labels: [
+      'Traumatisme crânien (TC)',
+      'AVC / Hémorragie',
+      'Tumeur',
+      'Chirurgie antérieure'
+    ],
+    datasets: [{
+      label: 'Nombre de patients',
+      data: [
+        adultCounts.tc,
+        adultCounts.avc,
+        adultCounts.tumeur,
+        adultCounts.chirurgie_anterieure
+      ],
+      backgroundColor: [
+        '#e74c3c',
+        '#f39c12',
+        '#8e44ad',
+        '#2ecc71'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Antécédents adultes'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  }
+});
+// ---- CIRCONSTANCES DE DÉCOUVERTE ----
+
+// Initialiser les compteurs
+const decouverteCounts = {
+  macrocranie: 0,
+  cephalees: 0,
+  troubles_marche: 0,
+  incontinence: 0,
+  regard_soleil: 0,
+  fontanelle_tendue: 0,
+  troubles_memoire: 0
+};
+
+// Compter les occurrences
+patients.forEach(p => {
+  const d = p.decouverte;
+
+  if (!d) return;
+
+  if (d.macrocranie) decouverteCounts.macrocranie++;
+  if (d.cephalees) decouverteCounts.cephalees++;
+  if (d.troubles_marche) decouverteCounts.troubles_marche++;
+  if (d.incontinence) decouverteCounts.incontinence++;
+  if (d.regard_soleil) decouverteCounts.regard_soleil++;
+  if (d.fontanelle_tendue) decouverteCounts.fontanelle_tendue++;
+  if (d.troubles_memoire) decouverteCounts.troubles_memoire++;
+});
+
+// Créer le graphique
+const ctxDecouverte = document.getElementById('decouverteChart').getContext('2d');
+
+new Chart(ctxDecouverte, {
+  type: 'bar',
+  data: {
+    labels: [
+      'Macrocrânie',
+      'Céphalées',
+      'Troubles marche',
+      'Incontinence',
+      'Regard soleil',
+      'Fontanelle tendue',
+      'Troubles mémoire'
+    ],
+    datasets: [{
+      label: 'Nombre de patients',
+      data: [
+        decouverteCounts.macrocranie,
+        decouverteCounts.cephalees,
+        decouverteCounts.troubles_marche,
+        decouverteCounts.incontinence,
+        decouverteCounts.regard_soleil,
+        decouverteCounts.fontanelle_tendue,
+        decouverteCounts.troubles_memoire
+      ],
+      backgroundColor: [
+        '#1abc9c',
+        '#3498db',
+        '#9b59b6',
+        '#e67e22',
+        '#e74c3c',
+        '#2ecc71',
+        '#34495e'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Circonstances de découverte'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  }
+});
+// ---- CIRCONSTANCES DE DÉCOUVERTE (PIE) ----
+
+// Compteurs
+const decouverteCountsPie = {
+  macrocranie: 0,
+  cephalees: 0,
+  troubles_marche: 0,
+  incontinence: 0,
+  regard_soleil: 0,
+  fontanelle_tendue: 0,
+  troubles_memoire: 0
+};
+
+// Comptage
+patients.forEach(p => {
+  const d = p.decouverte;
+  if (!d) return;
+
+  if (d.macrocranie) decouverteCountsPie.macrocranie++;
+  if (d.cephalees) decouverteCountsPie.cephalees++;
+  if (d.troubles_marche) decouverteCountsPie.troubles_marche++;
+  if (d.incontinence) decouverteCountsPie.incontinence++;
+  if (d.regard_soleil) decouverteCountsPie.regard_soleil++;
+  if (d.fontanelle_tendue) decouverteCountsPie.fontanelle_tendue++;
+  if (d.troubles_memoire) decouverteCountsPie.troubles_memoire++;
+});
+
+// Labels + data
+const labelsDecouverte = [
+  'Macrocrânie',
+  'Céphalées',
+  'Troubles marche',
+  'Incontinence',
+  'Regard soleil',
+  'Fontanelle tendue',
+  'Troubles mémoire'
+];
+
+const dataDecouverte = [
+  decouverteCountsPie.macrocranie,
+  decouverteCountsPie.cephalees,
+  decouverteCountsPie.troubles_marche,
+  decouverteCountsPie.incontinence,
+  decouverteCountsPie.regard_soleil,
+  decouverteCountsPie.fontanelle_tendue,
+  decouverteCountsPie.troubles_memoire
+];
+
+// Création graphique
+const ctxPie = document.getElementById('decouvertePieChart').getContext('2d');
+
+new Chart(ctxPie, {
+  type: 'doughnut', // or 'pie'
+  data: {
+    labels: labelsDecouverte,
+    datasets: [{
+      data: dataDecouverte,
+      backgroundColor: [
+        '#1abc9c',
+        '#3498db',
+        '#9b59b6',
+        '#e67e22',
+        '#e74c3c',
+        '#2ecc71',
+        '#34495e'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom'
+      },
+      title: {
+        display: true,
+        text: 'Répartition des circonstances de découverte'
+      }
+    }
+  }
+});
+// ---- IMAGERIE ----
+
+// Initialiser les compteurs
+const imagerieCounts = {
+  scanner: 0,
+  irm: 0,
+  echographie: 0
+};
+
+// Comptage
+patients.forEach(p => {
+  const img = p.imagerie;
+  if (!img) return;
+
+  if (img.scanner) imagerieCounts.scanner++;
+  if (img.irm) imagerieCounts.irm++;
+  if (img.echographie) imagerieCounts.echographie++;
+});
+
+// Labels + data
+const labelsImagerie = ['Scanner (TDM)', 'IRM', 'Échographie'];
+const dataImagerie = [
+  imagerieCounts.scanner,
+  imagerieCounts.irm,
+  imagerieCounts.echographie
+];
+
+// Création du graphique
+const ctxImg = document.getElementById('imagerieChart').getContext('2d');
+
+new Chart(ctxImg, {
+  type: 'doughnut',
+  data: {
+    labels: labelsImagerie,
+    datasets: [{
+      data: dataImagerie,
+      backgroundColor: [
+        '#3498db',
+        '#9b59b6',
+        '#1abc9c'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom'
+      },
+      title: {
+        display: true,
+        text: 'Utilisation des examens d’imagerie'
+      }
+    }
+  }
+});
+// ---- PRISE EN CHARGE ----
+
+// INTERVENTION
+const interventionCounts = { dvp: 0, dva: 0, vcs: 0 };
+
+// EVOLUTION
+const evolutionCounts = { favorable: 0, stable: 0, defavorable: 0 };
+
+// TIMELINE (by month)
+const timeline = {};
+
+// LOOP
+patients.forEach(p => {
+
+  // ---- INTERVENTION ----
+  const i = p.prise_en_charge?.intervention;
+  if (i?.dvp) interventionCounts.dvp++;
+  if (i?.dva) interventionCounts.dva++;
+  if (i?.vcs) interventionCounts.vcs++;
+
+  // ---- EVOLUTION ----
+  const e = p.prise_en_charge?.evolution;
+  if (e?.favorable) evolutionCounts.favorable++;
+  if (e?.stable) evolutionCounts.stable++;
+  if (e?.defavorable) evolutionCounts.defavorable++;
+
+  // ---- DATE TREND ----
+  const d = p.prise_en_charge?.date_intervention;
+
+  if (d) {
+    const date = new Date(d);
+    const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+
+    if (!timeline[key]) timeline[key] = 0;
+    timeline[key]++;
+  }
+
+});
+
+
+// ---- SORT TIMELINE ----
+const sortedKeys = Object.keys(timeline).sort();
+
+const timelineLabels = sortedKeys;
+const timelineValues = sortedKeys.map(k => timeline[k]);
+
+
+// ---- CHART 1: INTERVENTION ----
+new Chart(document.getElementById('interventionChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['DVP', 'DVA', 'VCS'],
+    datasets: [{
+      data: [
+        interventionCounts.dvp,
+        interventionCounts.dva,
+        interventionCounts.vcs
+      ],
+      backgroundColor: ['#3498db', '#9b59b6', '#1abc9c']
+    }]
+  },
+  options: {
+    plugins: {
+      title: { display: true, text: 'Interventions' },
+      legend: { position: 'bottom' }
+    }
+  }
+});
+
+
+// ---- CHART 2: EVOLUTION ----
+new Chart(document.getElementById('evolutionChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Favorable', 'Stable', 'Défavorable'],
+    datasets: [{
+      data: [
+        evolutionCounts.favorable,
+        evolutionCounts.stable,
+        evolutionCounts.defavorable
+      ],
+      backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c']
+    }]
+  },
+  options: {
+    plugins: {
+      title: { display: true, text: 'Évolution' },
+      legend: { position: 'bottom' }
+    }
+  }
+});
+
+
+// ---- CHART 3: TIMELINE ----
+new Chart(document.getElementById('dateTrendChart'), {
+  type: 'line',
+  data: {
+    labels: timelineLabels,
+    datasets: [{
+      label: 'Interventions par mois',
+      data: timelineValues,
+      borderColor: '#3498db',
+      backgroundColor: 'rgba(52,152,219,0.2)',
+      tension: 0.3,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Évolution des interventions dans le temps'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+  </script>
+</body>
+</html>
