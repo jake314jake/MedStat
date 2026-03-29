@@ -93,3 +93,24 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+/* Export button */
+.export-btn {
+  margin-top: 15px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #2980b9, #1f618d);
+}
+
+.export-btn:active {
+  transform: scale(0.97);
+}
