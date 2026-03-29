@@ -8,65 +8,133 @@
 </head>
 <body>
   <h1>Statistiques des patients / hydrocéphalie</h1>
+ 
 
   <div class="grid-container">
+    
     <div class="chart-card">
       <h2>Répartition selon le sexe</h2>
       <canvas id="sexChart"></canvas>
+      <button class="export-btn">Exporter PDF</button>
     </div>
     <div class="chart-card">
   <h2>Distribution par âge</h2>
   <canvas id="ageChart"></canvas>
- 
+  <button class="export-btn">Exporter PDF</button>
 </div>
 
 <div class="chart-card">
   <h2>Antécédents Pédiatriques / Néonataux</h2>
   <canvas id="pediatrieChart"></canvas>
- 
+  <button class="export-btn">Exporter PDF</button>
 </div>
 <div class="chart-card">
   <h2>Antécédents Adultes</h2>
   <canvas id="adultChart"></canvas>
- 
+  <button class="export-btn">Exporter PDF</button>
 </div>
 <div class="chart-card">
   <h2>Circonstances de découverte</h2>
   <canvas id="decouverteChart"></canvas>
-  
+   <button class="export-btn">Exporter PDF</button>
 </div>
 <div class="chart-card">
   <h2>Circonstances de découverte </h2>
   <canvas id="decouvertePieChart"></canvas>
-  
+   <button class="export-btn">Exporter PDF</button>
 </div>
 <div class="chart-card">
   <h2>Imagerie</h2>
   <canvas id="imagerieChart"></canvas>
-  
+   <button class="export-btn">Exporter PDF</button>
 </div>
 <div class="chart-card full-width">
   <h2>Prise en charge</h2>
 
   <div class="sub-grid">
-    <div>
-      <canvas id="interventionChart"></canvas>
-    </div>
+    <div><canvas id="interventionChart"></canvas></div>
+    <div><canvas id="evolutionChart"></canvas></div>
+    <div class="wide-chart"><canvas id="dateTrendChart"></canvas></div>
+  </div>
 
-    <div>
-      <canvas id="evolutionChart"></canvas>
-    </div>
+  <button class="export-btn">Exporter PDF</button>
+</div>
+
+<div class="chart-card">
+  <h2>Suite a</h2>
+  <canvas id="etiologieChart"></canvas>
+  <button class="export-btn">Exporter PDF</button>
+</div>
+
+<div class="chart-card">
+  <h2>Type d’hydrocéphalie</h2>
+  <canvas id="hydroTypeChart"></canvas>
+   <button class="export-btn">Exporter PDF</button>
+</div>
+<div class="chart-card full-width">
+  <h2>FO</h2>
+
+  <div class="sub-grid">
 
     <div class="wide-chart">
-      <canvas id="dateTrendChart"></canvas>
+      <canvas id="foPieChart"></canvas>
     </div>
+
+ 
+   
+    <div class="wide-chart"><canvas id="foCombinedChart"></canvas></div>
+
   </div>
+  <button class="export-btn">Exporter PDF</button>
 </div>
   
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script >
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+document.querySelectorAll('.chart-card .export-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+
+    const card = btn.closest('.chart-card');
+    const canvases = card.querySelectorAll('canvas');
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const title = card.querySelector('h2')?.innerText || 'statistique';
+
+    let y = 15;
+
+    // Title
+    pdf.setFontSize(14);
+    pdf.text(title, 10, y);
+    y += 10;
+
+    canvases.forEach((canvas, index) => {
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // If too big → new page
+      if (y + imgHeight > 280) {
+        pdf.addPage();
+        y = 15;
+      }
+
+      pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
+
+      y += imgHeight + 10;
+    });
+
+    pdf.save(title + '.pdf');
+  });
+});
+</script>
+ <script >
     // stat.js
 
 
@@ -4592,6 +4660,219 @@ new Chart(document.getElementById('dateTrendChart'), {
     scales: {
       y: {
         beginAtZero: true
+      }
+    }
+  }
+});
+
+const etiologieData = {
+  labels: [
+    'Arnold Chiari',
+    'Sténose aqueduc de Sylvius',
+    'Myéloméningocèle',
+    'Processus tumoral'
+  ],
+  values: [20, 12, 2, 6]
+};
+
+const ctxEtiologie = document.getElementById('etiologieChart').getContext('2d');
+
+new Chart(ctxEtiologie, {
+  type: 'bar',
+  data: {
+    labels: etiologieData.labels,
+    datasets: [{
+      label: 'Nombre de patients',
+      data: etiologieData.values,
+      backgroundColor: [
+        '#3498db',
+        '#9b59b6',
+        '#1abc9c',
+        '#e67e22'
+      ],
+      borderColor: [
+        '#2980b9',
+        '#8e44ad',
+        '#16a085',
+        '#d35400'
+      ],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: 'Suite a'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      }
+    }
+  }
+});
+
+const hydroLabels = [
+  "Triventriculaire",
+  "Tétraventriculaire",
+  "Biventriculaire",
+  "Monoventriculaire",
+  "Sustentorielle",
+  "Pression normale",
+  "Ventriculomégalie supratentorielle"
+];
+
+const hydroData = [31, 25, 2, 1, 4, 2, 1];
+
+const ctxHydro = document.getElementById('hydroTypeChart').getContext('2d');
+
+new Chart(ctxHydro, {
+  type: 'bar',
+  data: {
+    labels: hydroLabels,
+    datasets: [{
+      label: "Nombre de patients",
+      data: hydroData,
+      backgroundColor: [
+        "#3498db",
+        "#2980b9",
+        "#1abc9c",
+        "#16a085",
+        "#9b59b6",
+        "#8e44ad",
+        "#f39c12"
+      ],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Distribution des types d’hydrocéphalie"
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1
+        }
+      },
+      x: {
+        ticks: {
+          maxRotation: 45,
+          minRotation: 30
+        }
+      }
+    }
+  }
+});
+// ---------------- PIE FO ----------------
+const foPieCtx = document.getElementById('foPieChart').getContext('2d');
+
+new Chart(foPieCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['FO Oui', 'FO Non'],
+    datasets: [{
+      data: [41, 25],
+      backgroundColor: ['#27ae60', '#e74c3c']
+    }]
+  },
+  options: {
+    plugins: {
+      title: {
+        display: true,
+        text: "Présence du fond d'œil"
+      },
+      legend: {
+        position: 'bottom'
+      }
+    }
+  }
+});
+
+
+// ---------------- BAR COMBINÉ ----------------
+// ---------------- BAR COMBINÉ ----------------
+const foBarCtx = document.getElementById('foCombinedChart').getContext('2d');
+
+new Chart(foBarCtx, {
+  type: 'bar',
+  data: {
+    // Labels arranged to show hierarchy
+    labels: [
+      'Normal', 
+      'Pathologique (Total)', 
+      'Stade 1', 
+      'Stade 2', 
+      'Stade 3', 
+      'Stade 4'
+    ],
+    datasets: [{
+      label: "Nombre de patients",
+      data: [12, 25, 1, 2, 14, 8],
+      backgroundColor: [
+        '#3498db', // Blue for Normal
+        '#7f8c8d', // Grey for the Total Patho (to distinguish from stages)
+        '#f1c40f', // Yellow - Stade 1
+        '#e67e22', // Orange - Stade 2
+        '#e74c3c', // Red - Stade 3
+        '#c0392b'  // Dark Red - Stade 4
+      ],
+      borderWidth: 1,
+      borderRadius: 6,
+      hoverBorderWidth: 2,
+      hoverBorderColor: '#2c3e50'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "",
+        font: { size: 16 }
+      },
+      legend: { display: false }, // Hide because colors are self-explanatory
+      tooltip: {
+        enabled: true,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 10,
+        callbacks: {
+          // Customizing hover text
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) { label += ': '; }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y + ' patients';
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Nombre de Patients'
+        },
+        ticks: { stepSize: 2 }
+      },
+      x: {
+        grid: { display: false } // Cleaner look
       }
     }
   }
